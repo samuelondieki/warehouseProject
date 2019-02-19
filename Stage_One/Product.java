@@ -79,4 +79,12 @@ public class Product implements Serializable {
         return Manufacturer.iterator();
     }
 
+    public boolean equals(String id) {
+        return this.id.equals(id);
+    }
+
+    public String toString() {
+        String string = "Product ID: " + id + ", name: " + name + ", price $" + price;
+    }
+
 }
