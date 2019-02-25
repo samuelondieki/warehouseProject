@@ -64,8 +64,6 @@ public class ProdcuctList implements Serializabale {
         return string;
     }
 
-}// end of fil
+}// end of file
 
-// display the products with approriate information
-//
-//
+// ~Samuel Ondieki

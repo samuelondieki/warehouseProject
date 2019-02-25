@@ -2,21 +2,24 @@ import java.util.*;
 import java.lang.*;
 import java.io.*;
 
+import ProductIdServer;
+
 public class Product implements Serializable {
     private static final long serialVersionUID = 1L; // what does this do
     private double price;
     private String name;
     private String id;
     private int quantity;
-    private List Manufacturer;
+    private List<String> manufacturers;
 
-    public Product(String name, double price) {
+    private static final String PRODUCT_STRING = "p";
+
+    public Product(String name, double price, int quantity) {
         this.name = name;
         this.price = price;
         this.quantity = quantity;
         this.Manufacturer = new LinkedList();
-        // not sure about this one (to assign an ID to a product )
-        id = PRODUCT_STRING + (ProductIdServer.instance()).getId();
+        this.id = PRODUCT_STRING + (ProductIdServer.instance()).getId();
     }
 
     // setters
@@ -41,9 +44,7 @@ public class Product implements Serializable {
         return price;
     }
 
-    pbulic String
-
-    getId(){
+    public String getId() {
         return id;
     }
 
