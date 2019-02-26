@@ -1,91 +1,82 @@
 import java.util.*;
-import java.lang.*;
+import java.text.*;
 import java.io.*;
 
-import ProductIdServer;
-
 public class Product implements Serializable {
-    private static final long serialVersionUID = 1L; // what does this do
-    private double price;
-    private String name;
-    private String id;
-    private int quantity;
-    private List<String> manufacturers;
-
+    private static final long serialVersionUID = 1L;
+    private String Name;
+    private String Description;
+    private String productId;
     private static final String PRODUCT_STRING = "p";
+    private List<Manufacturer> productManufacturer = new LinkedList<Manufacturer>();
+    private List<Double> productPrices = new LinkedList<Double>();
 
-    public Product(String name, double price, int quantity) {
-        this.name = name;
-        this.price = price;
-        this.quantity = quantity;
-        this.Manufacturer = new LinkedList();
-        this.id = PRODUCT_STRING + (ProductIdServer.instance()).getId();
+    public Product(String Name, String Description) {
+        this.Name = Name;
+        this.Description = Description;
+        productId = PRODUCT_STRING + (ProductIdServer.instance()).getId();
     }
 
-    // setters
-    public void setPrice(double newPrice) {
-        this.price = newPrice;
-    }
-
-    public void setName(String newName) {
-        this.name = newName;
-    }
-
-    // getters
-    public String getName() {
-        return name;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    // search Manufacuturer
-    public ProdcuctList searchManufacturer(String id) {
-        Iterator productMan = Manufacturer.iterator();
-        while (product.hasNext()) {
-            ProductList product = (ProductList) product.next;
-            if (product.getManufacturer().equals(id)) {
-                return productMan;
+    public int searchSupplier(Manufacturer supplier) {
+        int i = 0;
+        for (; i <= productManufacturer.size() - 1; i++) {
+            if ((productManufacturer.get(i)) == supplier) {
+                return i;
             }
         }
-        return null;
+        i = -1;
+        return i;
     }
 
-    // assign Manufacturer
-    public boolean assignManufacturer(ProdcuctList PL) {
-        return mManufacturer.add(PL);
+    public boolean assign(Manufacturer supplier) {
+        return productManufacturer.add(supplier) ? true : false;
     }
 
-    // unassign Manufacturer
-    public boolean unassignManufacturer(ProductList PL) {
-        return mManufacturer.remove(PL);
+    public boolean Unassign(Manufacturer supplier) {
+        if (productManufacturer.remove(supplier)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    // count manufacturers
-    public List getManufacturerCount() {
-        return Manufacturer.size();
+    public Boolean addPrice(double price) {
+        return productPrices.add(price) ? true : false;
     }
 
-    // get Manufacturers
-    public Iterator getManufacturer() {
-        return Manufacturer.iterator();
+    public Boolean removePrice(int position) {
+        if (productPrices.remove(position) >= 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    public boolean equals(String id) {
-        return this.id.equals(id);
+    public String getID() {
+        return productId;
+    }
+
+    public Iterator<Manufacturer> getManufacturers() {
+        return productManufacturer.iterator();
+    }
+
+    public Iterator<Double> getManufacturerPrices() {
+        return productPrices.iterator();
+    }
+
+    public String getProductDescription() {
+        return Description;
+    }
+
+    public String getProductName() {
+        return Name;
+    }
+
+    public String getProductId() {
+        return productId;
     }
 
     public String toString() {
-        String string = "Product ID: " + id + ", name: " + name + ", price $" + price;
+        return "\nNAME: " + Name + "\nDESCRIPTION: " + Description + "\nID: " + productId;
     }
-
 }

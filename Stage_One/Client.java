@@ -1,58 +1,57 @@
-
 import java.util.*;
+import java.text.*;
 import java.io.*;
 
 public class Client implements Serializable {
-	private static final long serialVersionUID = 1L; // magic spell
-	private String name;
-	private String address;
-	private String phone;
-	private String id;
-	private static final String CLIENT_STRING = "C";
+  private static final long serialVersionUID = 1L;
+  private String Name;
+  private String Address;
+  private String Phone;
+  private String clientID;
+  private static final String CLIENT_STRING = "C";
 
-	public Client(String name, String address, String phone) {
+  public Client(String Name, String Address, String Phone) {
+    this.Name = Name;
+    this.Address = Address;
+    this.Phone = Phone;
+    clientID = CLIENT_STRING + (ClientIdServer.instance()).getId();
+  }
 
-		this.name = name;
-		this.address = address;
-		this.phone = phone;
-		id = CLIENT_STRING + (ClientIdServer.instance()).getId();
-	}
+  public String getClientName() {
+    return Name;
+  }
 
-	public String getId() {
-		return id;
-	}
+  public String getClientPhone() {
+    return Phone;
+  }
 
-	public String getName() {
-		return name;
-	}
+  public String getClientAddress() {
+    return Address;
+  }
 
-	public String getPhone() {
-		return phone;
-	}
+  public String getClientId() {
+    return clientID;
+  }
 
-	public String getAddress() {
-		return address;
-	}
+  public void setClientName(String newName) {
+    Name = newName;
+  }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+  public void setClientAddress(String newAddress) {
+    Address = newAddress;
+  }
 
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
+  public void setClientPhone(String newPhone) {
+    Phone = newPhone;
+  }
 
-	public void setAddress(String address) {
-		this.address = address;
-	}
+  public boolean equals(String id) {
+    return this.clientID.equals(clientID);
+  }
 
-	public boolean equals(String id) {
-		return this.id.equals(id);
-	}
-
-	public String toString() {
-		String string = "Client ID: " + id + ", name: " + name + ", address: " + address + ", phone: " + phone;
-		return string;
-	}
-
+  public String toString() {
+    String string = "\nClient name: " + Name + "\nAddress: " + Address + "\nID: " + clientID + "\nPhone: " + Phone
+        + "\n";
+    return string;
+  }
 }

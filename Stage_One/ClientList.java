@@ -1,11 +1,10 @@
-
 import java.util.*;
-import java.lang.*;
+import java.text.*;
 import java.io.*;
 
 public class ClientList implements Serializable {
   private static final long serialVersionUID = 1L;
-  private List cList = new LinkedList();
+  private List clients = new LinkedList();
   private static ClientList clientList;
 
   private ClientList() {
@@ -19,23 +18,13 @@ public class ClientList implements Serializable {
     }
   }
 
-  public boolean insertClient(Client client) {
-    return cList.add(client);
+  public boolean insertMember(Client client) {
+    clients.add(client);
+    return true;
   }
 
-  public Iterator getClientList() {
-    return cList.iterator();
-  }
-
-  public Client search(String id) {
-    Iterator clnt = cList.iterator();
-    while (clnt.hasNext()) {
-      Client client = (Client) clnt.next();
-      if (client.getId().equals(id)) {
-        return client;
-      }
-    }
-    return null;
+  public Iterator getAllClients() {
+    return clients.iterator();
   }
 
   private void writeObject(java.io.ObjectOutputStream output) {
@@ -43,7 +32,7 @@ public class ClientList implements Serializable {
       output.defaultWriteObject();
       output.writeObject(clientList);
     } catch (IOException ioe) {
-      System.out.println(ioe);
+      ioe.printStackTrace();
     }
   }
 
@@ -60,13 +49,13 @@ public class ClientList implements Serializable {
         }
       }
     } catch (IOException ioe) {
-      System.out.println("in ClientList readObject \n" + ioe);
+      ioe.printStackTrace();
     } catch (ClassNotFoundException cnfe) {
       cnfe.printStackTrace();
     }
   }
 
   public String toString() {
-    return cList.toString();
+    return clients.toString();
   }
 }

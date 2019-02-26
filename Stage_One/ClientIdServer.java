@@ -1,11 +1,15 @@
-
 import java.io.*;
+import java.util.*;
+import java.text.*;
+
 public class ClientIdServer implements Serializable {
-  private  int idCounter;
+  private int idCounter;
   private static ClientIdServer server;
+
   private ClientIdServer() {
     idCounter = 1;
   }
+
   public static ClientIdServer instance() {
     if (server == null) {
       return (server = new ClientIdServer());
@@ -13,29 +17,34 @@ public class ClientIdServer implements Serializable {
       return server;
     }
   }
+
   public int getId() {
     return idCounter++;
   }
+
   public String toString() {
     return ("IdServer" + idCounter);
   }
+
   public static void retrieve(ObjectInputStream input) {
     try {
       server = (ClientIdServer) input.readObject();
-    } catch(IOException ioe) {
+    } catch (IOException ioe) {
       ioe.printStackTrace();
-    } catch(Exception cnfe) {
+    } catch (Exception cnfe) {
       cnfe.printStackTrace();
     }
   }
+
   private void writeObject(java.io.ObjectOutputStream output) throws IOException {
     try {
       output.defaultWriteObject();
       output.writeObject(server);
-    } catch(IOException ioe) {
+    } catch (IOException ioe) {
       ioe.printStackTrace();
     }
   }
+
   private void readObject(java.io.ObjectInputStream input) throws IOException, ClassNotFoundException {
     try {
       input.defaultReadObject();
@@ -44,7 +53,7 @@ public class ClientIdServer implements Serializable {
       } else {
         input.readObject();
       }
-    } catch(IOException ioe) {
+    } catch (IOException ioe) {
       ioe.printStackTrace();
     }
   }

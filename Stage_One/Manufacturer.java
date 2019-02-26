@@ -1,91 +1,82 @@
 import java.util.*;
-import java.lang.*;
+import java.text.*;
 import java.io.*;
 
 public class Manufacturer implements Serializable {
-    private static final long serialVersionUID = 1L; // magic spell
-    private String name;
-    private String address;
-    private String phone;
-    private String id;
+	private static final long serialVersionUID = 1L;
+	private String Name;
+	private String Address;
+	private String Phone;
+	private String manufacturerId;
+	private static final String MANUFACTURER_STRING = "m";
+	private List<Product> Products = new LinkedList<Product>();
 
-    private static final String MANUFACTURER_STRING = "M";
-    private List<ProdMan> productsCarried;
+	private List booksBorrowed = new LinkedList();
+	private List booksOnHold = new LinkedList();
+	private List transactions = new LinkedList();
 
-    public Manufacturer(String name, String address, String phone) {
-        this.name = name;
-        this.address = address;
-        this.phone = phone;
-        this.productsCarried = new LinkedList<ProdMan>();
-        id = MANUFACTURER_STRING + (ManufacturerIdServer.instance()).getId();
-    }
+	public boolean assignProduct(Product P) {
+		if (Products.add(P)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 
-    public String getId() {
-        return id;
-    }
+	public boolean unassignProduct(Product P) {
+		if (Products.remove(P)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 
-    public String getName() {
-        return name;
-    }
+	public Manufacturer(String Name, String Address, String Phone) {
+		this.Name = Name;
+		this.Address = Address;
+		this.Phone = Phone;
+		manufacturerId = MANUFACTURER_STRING + (ManufacturerIdServer.instance()).getId();
+	}
 
-    public String getPhone() {
-        return phone;
-    }
+	public String getManufacturerName() {
+		return Name;
+	}
 
-    public String getAddress() {
-        return address;
-    }
+	public Iterator<Product> getProducts() {
+		return Products.iterator();
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public String getManufacturerPhone() {
+		return Phone;
+	}
 
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
+	public String getManufacturerAddress() {
+		return Address;
+	}
 
-    public void setAddress(String address) {
-        this.address = address;
-    }
+	public String getManufacturerId() {
+		return manufacturerId;
+	}
 
-    public boolean equals(String id) {
-        return this.id.equals(id);
-    }
+	public void setManufacturerName(String newName) {
+		Name = newName;
+	}
 
-    public ProdMan searchProd(String id) {
-        Iterator prods = productsCarried.iterator();
-        while (prods.hasNext()) {
-            ProdMan prodman = (ProdMan) prods.next();
-            if (prodman.getProdId().equals(id)) {
-                return prodman;
-            }
-        }
-        return null;
-    }
+	public void setManufacturerAddress(String newAddress) {
+		Address = newAddress;
+	}
 
-    public boolean assignProduct(ProdMan pm) {
-        return productsCarried.add(pm);
-    }
+	public void setManufacturerPhone(String newPhone) {
+		Phone = newPhone;
+	}
 
-    public boolean unassignProduct(ProdMan pm) {
-        return productsCarried.remove(pm);
-    }
+	public boolean equals(String id) {
+		return this.manufacturerId.equals(manufacturerId);
+	}
 
-    public boolean hasProduct(ProdMan pm) {
-        return productsCarried.contains(pm);
-    }
-
-    public int getProductCount() {
-        return productsCarried.size();
-    }
-
-    public Iterator getProducts() {
-        return productsCarried.iterator();
-    }
-
-    public String toString() {
-        String string = "Manufacturer ID: " + id + ", name: " + name + ", address: " + address + ", phone: " + phone;
-        return string;
-    }
-
+	public String toString() {
+		String string = "\nManufacturer name: " + Name + "\nAddress: " + Address + "\nID: " + manufacturerId
+				+ "\nPhone: " + Phone + "\n";
+		return string;
+	}
 }

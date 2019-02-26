@@ -1,69 +1,85 @@
-
-//Group 26
 import java.util.*;
-import java.lang.*;
+import java.text.*;
 import java.io.*;
 
-public class ProdcuctList implements Serializabale {
-    private static final long serialversionUID = 1L;
-    private Manufacturer manufacturer;
-    private Product product;
-    private double price;
+public class ProductList implements Serializable {
+    private static final long serialVersionUID = 1L;
+    private List<Product> products = new LinkedList<Product>();
+    private static ProductList productList;
 
-    public ProductList(){};
-
-    public ProdcuctList(Product prod, Manufacturer manu, double price) {
-        this.product = prod;
-        this.manufacturer = manu;
-        this.price = price;
+    private ProductList() {
     }
 
-    // getters
-    public Manufacturer getManufacturer() {
-        return manufacturer;
+    public static ProductList instance() {
+        if (productList == null) {
+            return (productList = new ProductList());
+        } else {
+            return productList;
+        }
     }
 
-    public Product getProduct() {
-        return product;
+    public boolean searchProduct(String searchProductID) {
+        boolean discover = false;
+        Iterator<Product> productsIterator = products.iterator();
+        while (productsIterator.hasNext()) {
+            Product product = (Product) productsIterator.next();
+            if (product.getProductId().equals(searchProductID)) {
+                discover = true;
+                return discover;
+            }
+        }
+        System.out.println("product not discovered");
+        return discover;
     }
 
-    public double getPrice() {
-        return price;
+    public Product search(String productId) {
+        for (Iterator iterator = products.iterator(); iterator.hasNext();) {
+            Product product = (Product) iterator.next();
+            if (product.getID().equals(productId)) {
+                return product;
+            }
+        }
+        return null;
     }
 
-    // setters
-    public void setManufacturer(Manufacturer manufacturer) {
-        this.manufacturer = manufacturer;
+    public boolean insertProduct(Product prod) {
+        products.add(prod);
+        return true;
     }
 
-    public void setProduct(Product product) {
-        this.product = product;
+    public Iterator getAllProducts() {
+        return products.iterator();
     }
 
-    public void setPrice(double price) {
-        this.price = price;
+    private void writeObject(java.io.ObjectOutputStream output) {
+        try {
+            output.defaultWriteObject();
+            output.writeObject(productList);
+        } catch (IOException ioe) {
+            System.out.println(ioe);
+        }
     }
 
-    // get product and manufacturer ID
-    public String getProductId() {
-        return product.getId();
+    private void readObject(java.io.ObjectInputStream input) {
+        try {
+            if (productList != null) {
+                return;
+            } else {
+                input.defaultReadObject();
+                if (productList == null) {
+                    productList = (ProductList) input.readObject();
+                } else {
+                    input.readObject();
+                }
+            }
+        } catch (IOException ioe) {
+            System.out.println("in ProductList readObject \n" + ioe);
+        } catch (ClassNotFoundException cnfe) {
+            cnfe.printStackTrace();
+        }
     }
 
-    public String getManufacturerId(){
-        return manufacturer.getId
+    public String toString() {
+        return products.toString();
     }
-
-    // overide to display the info..
-    public String productString() {
-        String string = product.toString() + ", price: $" + price;
-        return string;
-    }
-
-    public String manufacturerString() {
-        String string = manufacturer.toString() + ", supply price: $" + price;
-        return string;
-    }
-
-}// end of file
-
-// ~Samuel Ondieki
+}

@@ -1,5 +1,5 @@
 import java.util.*;
-import java.lang.*;
+import java.text.*;
 import java.io.*;
 
 public class UserInterface {
@@ -7,27 +7,20 @@ public class UserInterface {
     private BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
     private static Warehouse warehouse;
     private static final int EXIT = 0;
-    private static final int ADD_PRODUCT = 1;
-    private static final int ADD_MANUFACTURER = 2;
-    private static final int ADD_CLIENT = 3;
-    private static final int SHOW_PRODUCTS = 4;
-    private static final int SHOW_MANUFACTURERS = 5;
-    private static final int SHOW_CLIENTS = 6;
-    private static final int SAVE = 7;
-    private static final int RETRIEVE = 8;
-    private static final int ASSIGN_PM = 9;
-    private static final int UNASSIGN_PM = 10;
-    private static final int DISPLAY_PRODMANUFACTURER = 11;
-    private static final int DISPLAY_MANUFACTURERPRODUCT = 12;
-    private static final int HELP = 22;
-    
+    private static final int ADD_CLIENT = 1;
+    private static final int ADD_PRODUCT = 2;
+    private static final int ADD_MANUFACTURER = 3;
+    private static final int DISPLAY_CLIENTS = 4;
+    private static final int DISPLAY_PRODUCTS = 5;
+    private static final int DISPLAY_MANUFACTURERS = 6;
+    private static final int ASGN_PROD_TO_MANU = 7;
+    private static final int DISPLAY_PRODUCTS_BY_MAN = 8;
+    private static final int DISPLAY_MANUFACTURER_FOR_PRODUCT = 9;
+    private static final int UNASSIGN_PRODUCT = 10;
+    private static final int HELP = 11;
 
     private UserInterface() {
-        if (yesorNo("Look for saved data and use it")) {
-            retrieve();
-        } else {
-            warehouse = Warehouse.instance;
-        }
+        warehouse = Warehouse.instance();
     }
 
     public static UserInterface instance() {
@@ -61,36 +54,10 @@ public class UserInterface {
         return true;
     }
 
-    public int getNumber(String prompt) {
-        do {
-            try {
-                String item = getToken(prompt);
-                Integer num = Integer.valueOf(item);
-                return num.intValue();
-            } catch (NumberFormatException nfe) {
-                System.out.println("Please input a number ");
-            }
-        } while (true);
-    }
-
-    public Calendar getDate(String prompt) {
-        do {
-            try {
-                Calendar date = new GregorianCalendar();
-                String item = getToken(prompt);
-                DateFormat df = SimpleDateFormat.getDateInstance(DateFormat.SHORT);
-                date.setTime(df.parse(item));
-                return date;
-            } catch (Exception fe) {
-                System.out.println("Please input a date as mm/dd/yy");
-            }
-        } while (true);
-    }
-
     public int getCommand() {
         do {
             try {
-                int value = Integer.parseInt(getToken("Enter command: (enter " + HELP + " for help)"));
+                int value = Integer.parseInt(getToken("Enter command:" + HELP + " for help"));
                 if (value >= EXIT && value <= HELP) {
                     return value;
                 }
@@ -101,22 +68,216 @@ public class UserInterface {
     }
 
     public void help() {
-        System.out.println("Enter a number between " + EXIT + " and " + HELP + " as explained below:\n");
-        System.out.println(EXIT + " to Exit\n");
-        System.out.println(ADD_PRODUCT + " to add products");
-        System.out.println(ADD_MANUFACTURER + " to add a manufacturer");
-        System.out.println(ADD_CLIENT + " to add a client");
-        System.out.println(SHOW_PRODUCTS + " to show all products");
-        System.out.println(SHOW_MANUFACTURERS + " to show all manufacturers");
-        System.out.println(SHOW_CLIENTS + " to show all clients");
-        System.out.println(SAVE + " to save data");
-        System.out.println(RETRIEVE + " to retrieve");
-        System.out.println(ASSIGN_PM + " to assign a product to manufacturer");
-        System.out.println(UNASSIGN_PM + " to unassign a product from manufacturer");
-        System.out.println(DISPLAY_PRODMANUFACTURER + " to display the manufacturers for a product");
-        System.out.println(DISPLAY_MANUFACTURERPRODUCT + " to display the products from a manufacturer");
-        System.out.println(HELP + " for help\n");
+        System.out.println("Enter a number between 0 and 12 as explained below:");
+        System.out.println(EXIT + " to Exit");
+        System.out.println(ADD_CLIENT + " Add client");
+        System.out.println(ADD_PRODUCT + " Add products");
+        System.out.println(ADD_MANUFACTURER + " Add manufacturer");
+        System.out.println(DISPLAY_CLIENTS + " Display clients");
+        System.out.println(DISPLAY_PRODUCTS + " Display products");
+        System.out.println(DISPLAY_MANUFACTURERS + " Display manufacturers");
+        System.out.println(ASGN_PROD_TO_MANU + " Assign product to manufacturer");
+        System.out.println(DISPLAY_PRODUCTS_BY_MAN + " Display list of products by a manufacturer");
+        System.out.println(DISPLAY_MANUFACTURER_FOR_PRODUCT + " Dsiplay list of manufacturers for a product");
+        System.out.println(UNASSIGN_PRODUCT + " Unassign a product");
+        System.out.println(HELP + " for help");
     }
 
+    public void addNewClient() {
+        String cName = getToken("Enter client name");
+        String cAddress = getToken("Enter address");
+        String cPhone = getToken("Enter phone");
+        Client result;
+        result = warehouse.addClient(cName, cAddress, cPhone);
+        if (result == null) {
+            System.out.println("Could not add client");
+        }
+        System.out.println(result);
+    }
 
+    public void addNewProduct() {
+        Product result;
+        do {
+            String pName = getToken("Enter name");
+            String pDesc = getToken("Enter description");
+            result = warehouse.addProduct(pName, pDesc);
+            if (result != null) {
+                System.out.println(result);
+            } else {
+                System.out.println("Product could not be added");
+            }
+            if (!yesOrNo("Add more products?")) {
+                break;
+            }
+        } while (true);
+    }
+
+    public void addnewManufacturer() {
+        Manufacturer result;
+        do {
+            String mName = getToken("Enter name");
+            String mAddress = getToken("Enter address");
+            String mPhonenumber = getToken("Enter phone number");
+            result = warehouse.addManufacturer(mName, mAddress, mPhonenumber);
+            if (result != null) {
+                System.out.println(result);
+            } else {
+                System.out.println("Manufacturer could not be added");
+            }
+            if (!yesOrNo("Add more Manufacturers?")) {
+                break;
+            }
+        } while (true);
+    }
+
+    public void showProducts() {
+        Iterator allProducts = warehouse.getProducts();
+        while (allProducts.hasNext()) {
+            Product product = (Product) (allProducts.next());
+            System.out.println(product.toString());
+        }
+    }
+
+    public void showClients() {
+        Iterator allManu = warehouse.getClients();
+        while (allManu.hasNext()) {
+            Client client = (Client) (allManu.next());
+            System.out.println(client.toString());
+        }
+    }
+
+    public void showManufacturers() {
+        Iterator allManu = warehouse.getManufacturer();
+        while (allManu.hasNext()) {
+            Manufacturer manufacturer = (Manufacturer) (allManu.next());
+            System.out.println(manufacturer.toString());
+        }
+    }
+
+    public void assignProduct() {
+        String pId = getToken("Enter product ID: ");
+        Product product;
+        if ((product = warehouse.searchProduct(pId)) == null) {
+            System.out.println("Product does not exist.");
+            return;
+        }
+
+        String mId = getToken("Enter manufacturer ID: ");
+        Manufacturer m;
+        if ((m = warehouse.searchManufacturer(mId)) == null) {
+            System.out.println("No such manufacturer.");
+            return;
+        }
+
+        double p;
+        while (true) {
+            String price = getToken("Enter product price: ");
+            try {
+                p = Double.parseDouble(price);
+                break;
+            } catch (NumberFormatException ignore) {
+                System.out.println("Invalid price");
+            }
+        }
+        product = warehouse.assignProdToManufacturer(pId, mId, p);
+    }
+
+    public void unassignProduct() {
+        String pId = getToken("Enter product ID: ");
+        Product product;
+        if ((product = warehouse.searchProduct(pId)) == null) {
+            System.out.println("Product does not exist.");
+            return;
+        }
+
+        String mId = getToken("Enter manufacturer ID: ");
+        Manufacturer m;
+        if ((m = warehouse.searchManufacturer(mId)) == null) {
+            System.out.println("No such manufacturer.");
+            return;
+        }
+        warehouse.unassignProdFromManufacturer(pId, mId);
+    }
+
+    public void process() {
+        int command;
+        help();
+        while ((command = getCommand()) != EXIT) {
+            switch (command) {
+            case ADD_CLIENT:
+                addNewClient();
+                break;
+            case ADD_PRODUCT:
+                addNewProduct();
+                break;
+            case ADD_MANUFACTURER:
+                addnewManufacturer();
+                break;
+            case DISPLAY_CLIENTS:
+                showClients();
+                break;
+            case DISPLAY_PRODUCTS:
+                showProducts();
+                break;
+            case DISPLAY_MANUFACTURERS:
+                showManufacturers();
+                break;
+            case DISPLAY_PRODUCTS_BY_MAN:
+                listProductsByManufacturer();
+                break;
+            case DISPLAY_MANUFACTURER_FOR_PRODUCT:
+                listSuppliersForProduct();
+                break;
+            case ASGN_PROD_TO_MANU:
+                assignProduct();
+                break;
+            case HELP:
+                help();
+                break;
+            case UNASSIGN_PRODUCT:
+                unassignProduct();
+                break;
+
+            }
+        }
+    }
+
+    public void listProductsByManufacturer() {
+        String m = getToken("Please enter manufacturer ID: ");
+        Manufacturer manufacturer = warehouse.searchManufacturer(m);
+        if (manufacturer != null) {
+            Product p_temp;
+            Iterator<Product> product_traverse = warehouse.getProductByMan(manufacturer);
+            while (product_traverse.hasNext() != false) {
+                p_temp = product_traverse.next();
+                System.out.println(p_temp.getProductName());
+            }
+        } else {
+            System.out.println("Manufacturer doesn't exist");
+        }
+    }
+
+    public void listSuppliersForProduct() {
+        String p = getToken("Please enter product ID: ");
+        Product product = warehouse.searchProduct(p);
+        if (product != null) {
+            Manufacturer m_temp;
+            double price_temp;
+            Iterator<Manufacturer> m_traversal = warehouse.getManufacturerByProd(product);
+            Iterator<Double> price_traverse = warehouse.getPrice(product);
+
+            while (m_traversal.hasNext() != false) {
+                m_temp = m_traversal.next();
+                price_temp = price_traverse.next();
+                System.out
+                        .println(m_temp.getManufacturerName() + "                               Price: " + price_temp);
+            }
+        } else {
+            System.out.println("Product Doesnt't exist");
+        }
+    }
+
+    public static void main(String[] s) {
+        UserInterface.instance().process();
+    }
 }
