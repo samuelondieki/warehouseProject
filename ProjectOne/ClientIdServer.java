@@ -3,6 +3,7 @@ import java.util.*;
 import java.text.*;
 
 public class ClientIdServer implements Serializable {
+  private static final long serialVersionUID = 1L;
   private int idCounter;
   private static ClientIdServer server;
 

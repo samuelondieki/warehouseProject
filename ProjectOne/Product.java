@@ -7,13 +7,17 @@ public class Product implements Serializable {
     private String Name;
     private String Description;
     private String productId;
+    private int quantity;
+    private double cost;
     private static final String PRODUCT_STRING = "p";
     private List<Manufacturer> productManufacturer = new LinkedList<Manufacturer>();
     private List<Double> productPrices = new LinkedList<Double>();
 
-    public Product(String Name, String Description) {
+    public Product(String Name, double cost, int quantity) {
         this.Name = Name;
-        this.Description = Description;
+        this.cost = cost;
+        this.quantity = quantity;
+        this.setCost(cost);
         productId = PRODUCT_STRING + (ProductIdServer.instance()).getId();
     }
 
@@ -76,7 +80,23 @@ public class Product implements Serializable {
         return productId;
     }
 
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public double getCost() {
+        return cost;
+    }
+
+    public void setCost(double cost) {
+        this.cost = cost;
+    }
+
     public String toString() {
-        return "\nNAME: " + Name + "\nDESCRIPTION: " + Description + "\nID: " + productId;
+        return "\nNAME: " + Name + "\nCOST: " + cost + "\nID: " + productId + "\nQuantity: " + quantity;
     }
 }

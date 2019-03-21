@@ -1,3 +1,7 @@
+
+//samuel ondieki
+//new version modified version
+
 import java.util.*;
 import java.text.*;
 import java.io.*;
@@ -17,10 +21,21 @@ public class UserInterface {
     private static final int DISPLAY_PRODUCTS_BY_MAN = 8;
     private static final int DISPLAY_MANUFACTURER_FOR_PRODUCT = 9;
     private static final int UNASSIGN_PRODUCT = 10;
-    private static final int HELP = 11;
+    private static final int ACCEPT_CLIENT_PAYMNENT = 11;
+    private static final int SHOW_WAITLIST = 12;
+    private static final int ADD_ORDER = 13;
+    private static final int DISPLAY_OUTSTANDING_BALANCE = 14;
+    private static final int PROCESS_ORDER = 15;
+    private static final int SAVE = 16;
+    private static final int RETRIEVE = 17;
+    private static final int HELP = 18;
 
     private UserInterface() {
-        warehouse = Warehouse.instance();
+        if (yesOrNo("Look for saved data and use it?")) {
+            retrieve();
+        } else {
+            warehouse = Warehouse.instance();
+        }
     }
 
     public static UserInterface instance() {
@@ -78,11 +93,21 @@ public class UserInterface {
         System.out.println(DISPLAY_MANUFACTURERS + " Display manufacturers");
         System.out.println(ASGN_PROD_TO_MANU + " Assign product to manufacturer");
         System.out.println(DISPLAY_PRODUCTS_BY_MAN + " Display list of products by a manufacturer");
-        System.out.println(DISPLAY_MANUFACTURER_FOR_PRODUCT + " Dsiplay list of manufacturers for a product");
+        System.out.println(DISPLAY_MANUFACTURER_FOR_PRODUCT + " Display list of manufacturers for a product");
         System.out.println(UNASSIGN_PRODUCT + " Unassign a product");
-        System.out.println(HELP + " for help");
+        System.out.println(ACCEPT_CLIENT_PAYMNENT + " Accept client payment");
+        System.out.println(SHOW_WAITLIST + " Show waitlisted orders for a product ");
+        System.out.println(ADD_ORDER + " To add an order");
+        System.out.println(DISPLAY_OUTSTANDING_BALANCE + " To display outstanding balances");
+        System.out.println(PROCESS_ORDER + " To receive a shipment");
+        System.out.println(" ");
+        System.out.println(SAVE + " To save");
+        System.out.println(RETRIEVE + " To retrieve");
+        System.out.println(HELP + " For help");
+
     }
 
+    // add client
     public void addNewClient() {
         String cName = getToken("Enter client name");
         String cAddress = getToken("Enter address");
@@ -95,12 +120,15 @@ public class UserInterface {
         System.out.println(result);
     }
 
+    // new product
     public void addNewProduct() {
         Product result;
         do {
             String pName = getToken("Enter name");
-            String pDesc = getToken("Enter description");
-            result = warehouse.addProduct(pName, pDesc);
+            int pQuantity = Integer.parseInt(getToken("Enter Product quantity"));
+            double pCost = Double.parseDouble(getToken("Enter price for item"));
+            ;
+            result = warehouse.addProduct(pName, pCost, pQuantity);
             if (result != null) {
                 System.out.println(result);
             } else {
@@ -112,6 +140,7 @@ public class UserInterface {
         } while (true);
     }
 
+    // new manufacturers
     public void addnewManufacturer() {
         Manufacturer result;
         do {
@@ -130,6 +159,7 @@ public class UserInterface {
         } while (true);
     }
 
+    // display products
     public void showProducts() {
         Iterator allProducts = warehouse.getProducts();
         while (allProducts.hasNext()) {
@@ -138,6 +168,7 @@ public class UserInterface {
         }
     }
 
+    // display clients
     public void showClients() {
         Iterator allManu = warehouse.getClients();
         while (allManu.hasNext()) {
@@ -156,8 +187,8 @@ public class UserInterface {
 
     public void assignProduct() {
         String pId = getToken("Enter product ID: ");
-        Product product;
-        if ((product = warehouse.searchProduct(pId)) == null) {
+        Product product; // not used
+        if ((product = warehouse.findProduct(pId)) == null) {
             System.out.println("Product does not exist.");
             return;
         }
@@ -185,11 +216,11 @@ public class UserInterface {
     public void unassignProduct() {
         String pId = getToken("Enter product ID: ");
         Product product;
-        if ((product = warehouse.searchProduct(pId)) == null) {
+        if ((product = warehouse.findProduct(pId)) == null) {
             System.out.println("Product does not exist.");
             return;
         }
-
+        System.out.println("It works for this one");
         String mId = getToken("Enter manufacturer ID: ");
         Manufacturer m;
         if ((m = warehouse.searchManufacturer(mId)) == null) {
@@ -197,6 +228,82 @@ public class UserInterface {
             return;
         }
         warehouse.unassignProdFromManufacturer(pId, mId);
+    }
+
+    // create an order
+    public void createOrder() {
+        Order createdOrder = new Order();
+        char cont;
+
+        String productStringId;
+        String tempString;
+        int tempQuantity;
+        Product tempProduct;
+        String tempClient;
+
+        boolean match = false;
+
+        boolean addItemsToOrder;
+        Order result;
+
+        tempClient = getToken("Enter client id to create order for ");
+        Iterator i = warehouse.getClients();
+
+        while (i.hasNext()) {
+            Client client = (Client) i.next();
+
+            if (client.equal(tempClient)) {
+                match = true;
+
+            }
+
+        }
+
+        if (match) {
+
+            do {
+
+                productStringId = getToken("Enter First id of product to be added to the list");
+                tempProduct = warehouse.findProduct(productStringId);
+                if (tempProduct != null) {
+
+                    tempQuantity = Integer.parseInt(getToken("Enter the quantity of that item: "));
+
+                    addItemsToOrder = createdOrder.insertlistedItem(tempProduct, tempQuantity);
+                    if (!addItemsToOrder) {
+                        System.out.println("Failed to add item to order");
+
+                    } else
+                        System.out.println("Added Item");
+
+                } else {
+                    System.out.println("Could not find item");
+                }
+
+                tempString = getToken("Continue adding items? Y to continue");
+                cont = tempString.charAt(0);
+            } while (cont == 'y' || cont == 'Y');
+
+            System.out.println("Processing the order");
+
+            result = warehouse.processOrder(createdOrder, tempClient);
+
+            if (result == null) {
+                System.out.println("Could not add order");
+            } else {
+
+                System.out.println("Added product " + result);
+
+            }
+        } else
+            System.out.println("Couldn't find client to creat order for");
+
+    }
+    // end of create an order
+
+    // unpaid balances
+    private void outstandingBalance() {
+        warehouse.outStandingBalance();
     }
 
     public void process() {
@@ -231,15 +338,38 @@ public class UserInterface {
             case ASGN_PROD_TO_MANU:
                 assignProduct();
                 break;
-            case HELP:
-                help();
-                break;
             case UNASSIGN_PRODUCT:
                 unassignProduct();
                 break;
+            case ACCEPT_CLIENT_PAYMNENT:
+                acceptPayment();
+                break;
+            case SHOW_WAITLIST:
+                showWaitlistedOrdersforProduct();
+                break;
+            case ADD_ORDER:
+                createOrder();
+            case DISPLAY_OUTSTANDING_BALANCE:
+                outstandingBalance();
+                break;
+            case PROCESS_ORDER:
+                recieveOrder();
+                break;
+            case SAVE:
+                save();
+                break;
+            case HELP:
+                help();
+                break;
+            case RETRIEVE:
+                retrieve();
+                break;
 
+            default:
+                break;
             }
         }
+        save();
     }
 
     public void listProductsByManufacturer() {
@@ -259,7 +389,7 @@ public class UserInterface {
 
     public void listSuppliersForProduct() {
         String p = getToken("Please enter product ID: ");
-        Product product = warehouse.searchProduct(p);
+        Product product = warehouse.findProduct(p);
         if (product != null) {
             Manufacturer m_temp;
             double price_temp;
@@ -277,7 +407,74 @@ public class UserInterface {
         }
     }
 
+    // acceptpayment
+    private void acceptPayment() {
+        double payment;
+        String clientName;
+        clientName = getToken("Enter client id to to make payment for:");
+        payment = Double.parseDouble(getToken("Enter total amount to be paid:"));
+        warehouse.acceptPayment(clientName, payment);
+    }
+
+    // process an order
+    private void recieveOrder() {
+        String productName;
+        productName = getToken("Enter Product id to recieve");
+
+        if (warehouse.findProduct(productName) != null) {
+            String productQuantity = getToken("Enter amount to receive");
+            warehouse.recieveProduct(productName, Integer.parseInt(productQuantity), reader);
+
+        } else {
+            System.out.println("Couldn't find product");
+
+        }
+
+    }
+
+    // save warehouse
+    // Save Function
+    private void save() {
+        if (warehouse.save()) {
+            System.out.println(" The warehouse has been successfully saved in the file WarehouseData \n");
+        } else {
+            System.out.println(" There has been an error in saving \n");
+        }
+    }
+
+    // Retrieve saved data
+    private void retrieve() {
+        try {
+            Warehouse tempWarehouse = Warehouse.retrieve();
+            if (tempWarehouse != null) {
+                System.out.println(" The warehouse has been successfully retrieved from the file WarehouseData \n");
+                warehouse = tempWarehouse;
+            } else {
+                System.out.println("File doesn't exist; creating new warehouse");
+                warehouse = Warehouse.instance();
+            }
+        } catch (Exception cnfe) {
+            cnfe.printStackTrace();
+        }
+    }
+
     public static void main(String[] s) {
         UserInterface.instance().process();
     }
+
+    // waitlisted orders
+    public void showWaitlistedOrdersforProduct() {
+        String productId;
+
+        productId = getToken("Enter product id to show waitlisted items for");
+        Product product = warehouse.findProduct(productId);
+
+        if (product != null)
+            warehouse.showWaitlistForProduct(product);
+
+        else
+            System.out.println("Coudldn't find product ");
+
+    }
+
 }

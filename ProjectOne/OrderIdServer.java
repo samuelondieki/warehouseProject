@@ -1,34 +1,39 @@
-import java.util.*;
-import java.text.*;
+
+//id server class for orders 
+
 import java.io.*;
 
-public class ManufacturerIdServer implements Serializable {
+public class OrderIdServer implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private int idCounter;
-    private static ManufacturerIdServer server;
+    private static OrderIdServer server;
 
-    private ManufacturerIdServer() {
+    private OrderIdServer() {
         idCounter = 1;
-    }
-
-    public static ManufacturerIdServer instance() {
-        if (server == null) {
-            return (server = new ManufacturerIdServer());
-        } else {
-            return server;
-        }
     }
 
     public int getId() {
         return idCounter++;
     }
 
+    @Override
     public String toString() {
         return ("IdServer" + idCounter);
     }
 
+    // Id server singleton instantiation
+    public static OrderIdServer instance() {
+        if (server == null) {
+            return (server = new OrderIdServer());
+        } else {
+            return server;
+        }
+    }
+
     public static void retrieve(ObjectInputStream input) {
         try {
-            server = (ManufacturerIdServer) input.readObject();
+            server = (OrderIdServer) input.readObject();
         } catch (IOException ioe) {
             ioe.printStackTrace();
         } catch (Exception cnfe) {
@@ -49,7 +54,7 @@ public class ManufacturerIdServer implements Serializable {
         try {
             input.defaultReadObject();
             if (server == null) {
-                server = (ManufacturerIdServer) input.readObject();
+                server = (OrderIdServer) input.readObject();
             } else {
                 input.readObject();
             }

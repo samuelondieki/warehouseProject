@@ -8,6 +8,8 @@ public class Client implements Serializable {
   private String Address;
   private String Phone;
   private String clientID;
+  private double invoicedAmount = 0.00;
+
   private static final String CLIENT_STRING = "C";
 
   public Client(String Name, String Address, String Phone) {
@@ -17,6 +19,11 @@ public class Client implements Serializable {
     clientID = CLIENT_STRING + (ClientIdServer.instance()).getId();
   }
 
+  public boolean equal(String id) {
+    return this.clientID.equals(id);
+  }
+
+  // getters
   public String getClientName() {
     return Name;
   }
@@ -37,6 +44,12 @@ public class Client implements Serializable {
     Name = newName;
   }
 
+  public double getInvoicedAmount() {
+    return invoicedAmount;
+  }
+
+  // setters
+
   public void setClientAddress(String newAddress) {
     Address = newAddress;
   }
@@ -49,9 +62,30 @@ public class Client implements Serializable {
     return this.clientID.equals(clientID);
   }
 
+  // debit
+  public void debitInvoice(double money) {
+    this.invoicedAmount += money;
+  }
+
+  // // credit
+  // public void creditInvoice(double money) {
+  // if (invoicedAmount >= 0.000) {
+  // invoicedAmount -= money;
+  // }
+  // // System.out.println("No invoiced amount to credit");
+  // }
+
+  // credit
+  public void creditInvoice(double money) {
+    this.invoicedAmount -= money;
+  }
+  // System.out.println("No invoiced amount to credit");
+
+  @Override
   public String toString() {
     String string = "\nClient name: " + Name + "\nAddress: " + Address + "\nID: " + clientID + "\nPhone: " + Phone
-        + "\n";
+        + "\ninvoicedAmount:" + invoicedAmount + "";
     return string;
   }
+
 }

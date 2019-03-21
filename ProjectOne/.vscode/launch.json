@@ -1,0 +1,11 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - UserInterface",
+            "request": "launch",
+            "mainClass": "UserInterface",
+            "projectName": "Stage1_c5adf0c5"
+        }
+    ]
+}
